@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Radio,
   Building2,
@@ -11,7 +12,13 @@ import {
   Layers,
   ArrowRight,
   FileText,
+  Plus,
 } from 'lucide-react'
+import { usePersistentState } from '../../hooks/usePersistentState'
+import {
+  ProjectDataModal,
+  type ProjectDataItem,
+} from './ProjectDataModal'
 
 const realResults = [
   { label: 'Power Reduction', value: '80%', detail: 'Saved via 5-element phased array vs single antenna', source: 'Report: Final Results' },
@@ -36,57 +43,47 @@ const powerComparison = [
 ]
 
 const dataAreas = [
-  {
-    icon: MapPin,
-    title: 'Real Heatmap',
-    status: 'placeholder',
-    description: 'The composite heatmap generated from MATLAB simulation showing signal strength distribution across the deployment area.',
-  },
-  {
-    icon: Radio,
-    title: 'Main Antenna',
-    status: 'data',
-    description: '5-element phased array antenna with lambda/2 element spacing, electronically steered across a 90 degree sector with 5 degree angular resolution.',
-  },
-  {
-    icon: Building2,
-    title: 'Building Layout',
-    status: 'placeholder',
-    description: 'The physical environment model used for signal propagation — walls, obstacles, and floor plan that cause attenuation and reflections.',
-  },
-  {
-    icon: Signal,
-    title: 'Signal Strength',
-    status: 'data',
-    description: 'Peak signal of 19.0 dB achieved with the phased array. Single antenna baseline measured at 10 dB. 64% of the area rated excellent coverage.',
-  },
-  {
-    icon: Target,
-    title: 'Dead Zones',
-    status: 'placeholder',
-    description: 'Areas identified as signal-deficient through the Helmholtz equation modeling and RSSI sensitivity calibration.',
-  },
-  {
-    icon: Network,
-    title: 'Node Placement',
-    status: 'data',
-    description: 'Initial extraction identified 29 candidate coordinates. After spatial optimization with greedy algorithm and CSP, refined to 16 optimal nodes.',
-  },
-  {
-    icon: Gauge,
-    title: 'Optimization',
-    status: 'data',
-    description: 'Greedy algorithm with constraint satisfaction pruned nodes using distance threshold of 50, RF sector stability filter, and 70 unit decorrelation buffer.',
-  },
-  {
-    icon: Zap,
-    title: 'Coverage Results',
-    status: 'data',
-    description: '80% power reduction, 44.8% node density reduction, 19.0 dB peak signal, and 64% excellent coverage across the deployment area.',
-  },
+  { icon: MapPin, title: 'Real Heatmap', status: 'placeholder', description: 'The composite heatmap generated from MATLAB simulation showing signal strength distribution across the deployment area.' },
+  { icon: Radio, title: 'Main Antenna', status: 'data', description: '5-element phased array antenna with lambda/2 element spacing, electronically steered across a 90 degree sector with 5 degree angular resolution.' },
+  { icon: Building2, title: 'Building Layout', status: 'placeholder', description: 'The physical environment model used for signal propagation — walls, obstacles, and floor plan that cause attenuation and reflections.' },
+  { icon: Signal, title: 'Signal Strength', status: 'data', description: 'Peak signal of 19.0 dB achieved with the phased array. Single antenna baseline measured at 10 dB. 64% of the area rated excellent coverage.' },
+  { icon: Target, title: 'Dead Zones', status: 'placeholder', description: 'Areas identified as signal-deficient through the Helmholtz equation modeling and RSSI sensitivity calibration.' },
+  { icon: Network, title: 'Node Placement', status: 'data', description: 'Initial extraction identified 29 candidate coordinates. After spatial optimization with greedy algorithm and CSP, refined to 16 optimal nodes.' },
+  { icon: Gauge, title: 'Optimization', status: 'data', description: 'Greedy algorithm with constraint satisfaction pruned nodes using distance threshold of 50, RF sector stability filter, and 70 unit decorrelation buffer.' },
+  { icon: Zap, title: 'Coverage Results', status: 'data', description: '80% power reduction, 44.8% node density reduction, 19.0 dB peak signal, and 64% excellent coverage across the deployment area.' },
+]
+
+const initialProjectData: ProjectDataItem[] = [
+  ...realResults.map((item, index) => ({
+    id: `result-${index}`,
+    category: 'Validated result' as const,
+    label: item.label,
+    value: item.value,
+    detail: item.detail,
+    source: item.source,
+  })),
+  ...realParams.map((item, index) => ({
+    id: `parameter-${index}`,
+    category: 'Technical parameter' as const,
+    label: item.label,
+    value: item.value,
+    detail: item.detail,
+    source: 'Project report',
+  })),
 ]
 
 export function RealProjectSection() {
+  const [projectData, setProjectData] = usePersistentState<ProjectDataItem[]>(
+    'sch_project_data',
+    initialProjectData,
+  )
+  const [modalOpen, setModalOpen] = useState(false)
+
+  const imageEntries = projectData.filter(
+    (item) =>
+      item.category === 'Project image' || item.category === 'Engineering diagram',
+  )
+
   return (
     <section id="real-project" className="py-20 px-4 md:px-8 relative">
       <div className="max-w-6xl mx-auto">
@@ -100,6 +97,9 @@ export function RealProjectSection() {
             this real project. Below is the actual research — mathematical modeling, simulation
             results, and hardware prototyping — that the game is based on.
           </p>
+          <button onClick={() => setModalOpen(true)} className="btn-primary mt-5">
+            <Plus size={16} /> Add Project Data
+          </button>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
@@ -112,6 +112,34 @@ export function RealProjectSection() {
             </div>
           ))}
         </div>
+
+        {imageEntries.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
+            {imageEntries.map((item) => (
+              <div key={item.id} className="card-surface-hover p-5">
+                <p className="text-xs text-cyan-400/80 font-mono uppercase tracking-wider">
+                  {item.category}
+                </p>
+                <h3 className="font-semibold text-white mt-2">
+                  {item.label || 'Untitled project asset'}
+                </h3>
+                {item.file?.startsWith('data:image/') && (
+                  <img
+                    src={item.file}
+                    alt={item.label}
+                    className="w-full max-h-64 object-contain rounded-lg bg-navy-950 mt-4"
+                  />
+                )}
+                <p className="text-sm text-slate-400 mt-3">{item.detail}</p>
+                {item.source && (
+                  <p className="text-xs text-slate-600 mt-2 font-mono">
+                    Source: {item.source}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
           {dataAreas.map((area) => (
@@ -208,6 +236,13 @@ export function RealProjectSection() {
           </p>
         </div>
       </div>
+      {modalOpen && (
+        <ProjectDataModal
+          items={projectData}
+          onSave={setProjectData}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </section>
   )
 }
