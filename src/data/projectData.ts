@@ -6,14 +6,24 @@ export interface ProjectMetric {
   reportPage: number
 }
 
+export interface ReportSubsection {
+  id: string
+  title: string
+  description: string
+  pdfPath: string
+  page?: number
+}
+
 export interface ReportSectionData {
   id: string
   number: string
   title: string
   description: string
   page: number
+  pdfPath: string
   topics: string[]
   projectLink?: string
+  subsections?: ReportSubsection[]
 }
 
 export interface ProjectAsset {
@@ -26,14 +36,84 @@ export interface ProjectAsset {
 
 export const reportPath = '/reports/finall_(2).pdf'
 
+const pdf = (file: string) => `/reports/${file}`
+
 export const reportSections: ReportSectionData[] = [
-  { id: 'abstract', number: '1', title: 'Abstract and Problem Definition', description: 'The report frames uneven indoor signal distribution, identifies dead zones and interference as the problem, and defines the project objectives.', page: 3, topics: ['Background and motivation', 'Problem statement', 'Research objectives'] },
-  { id: 'literature', number: '2', title: 'Literature Review', description: 'A review of wide wireless LANs, repeater systems, distributed antenna systems, phased arrays, and the gaps the project addresses.', page: 5, topics: ['Coverage improvement', 'Repeater systems', 'Distributed antenna systems', 'Analog IC with phased array antenna'], projectLink: 'real-project' },
-  { id: 'modeling', number: '3', title: 'Mathematical Modeling', description: 'The mathematical and computational model covers heat-map generation, node placement, node optimization, phased-array steering, and power consumption.', page: 12, topics: ['Heat Map', 'Node Placement', 'Node Optimization', 'Phased Antenna Array', 'Power consumption'], projectLink: 'real-project' },
-  { id: 'experimental', number: '4', title: 'Experimental Results', description: 'MATLAB-based experiments evaluate a single-antenna baseline, placement and optimization, phased-array behavior, software prototypes, hardware, and RSSI calibration.', page: 19, topics: ['Single Antenna Baseline Model', 'Node Placement', 'Nodes Optimization', 'Phased Antenna Array Model', 'Software Prototype', 'Hardware Prototype', 'RSSI Sensitivity Calibration'], projectLink: 'results' },
-  { id: 'final-results', number: '5', title: 'Final Results', description: 'The report consolidates the validated outcomes: power reduction, node density reduction, peak signal achieved, excellent coverage, and the power analysis.', page: 34, topics: ['Final results table', 'Number of elements', 'Power analysis'], projectLink: 'results' },
-  { id: 'conclusion', number: '6', title: 'Conclusion and Future Work', description: 'The conclusion summarizes the MATLAB optimization structure and identifies the future path toward a web application and broader implementation.', page: 35, topics: ['Conclusion', 'Future work'], projectLink: 'journey' },
-  { id: 'references', number: '7', title: 'References', description: 'The source material and research references used throughout the report.', page: 36, topics: ['Research sources', 'Technical references'] },
+  {
+    id: 'abstract',
+    number: '1',
+    title: 'Abstract and Problem Definition',
+    description: 'The report frames uneven indoor signal distribution, identifies dead zones and interference as the problem, and defines the project objectives.',
+    page: 3,
+    pdfPath: pdf('01_Abstract_and_Problem_Definition.pdf'),
+    topics: ['Background and motivation', 'Problem statement', 'Research objectives'],
+  },
+  {
+    id: 'literature',
+    number: '2',
+    title: 'Literature Review',
+    description: 'A review of wide wireless LANs, repeater systems, distributed antenna systems, phased arrays, and the gaps the project addresses.',
+    page: 5,
+    pdfPath: pdf('02_Literature_Review.pdf'),
+    topics: ['Coverage improvement', 'Repeater systems', 'Distributed antenna systems', 'Analog IC with phased array antenna'],
+    projectLink: 'real-project',
+  },
+  {
+    id: 'modeling',
+    number: '3',
+    title: 'Mathematical Modeling',
+    description: 'The mathematical and computational model covers heat-map generation, node placement, node optimization, phased-array steering, and power consumption.',
+    page: 12,
+    pdfPath: reportPath,
+    topics: ['Heat Map', 'Node Placement', 'Node Optimization', 'Phased Antenna Array', 'Power consumption'],
+    projectLink: 'real-project',
+    subsections: [
+      { id: 'heat-map', title: 'Heat Map', description: 'Convert the computed field and received power into a visual signal-strength map.', pdfPath: pdf('03_01_Heat_Map.pdf') },
+      { id: 'node-placement', title: 'Node Placement', description: 'Transform map information into target points and candidate locations for coverage.', pdfPath: pdf('03_02_Node_Placement.pdf') },
+      { id: 'node-optimization', title: 'Node Optimization', description: 'Use integer linear programming, spatial filtering, and constraint satisfaction to refine placement.', pdfPath: pdf('03_03_Node_Optimization.pdf') },
+      { id: 'phased-array', title: 'Phased Antenna Array', description: 'Steer a five-element array across a 90-degree sector and synthesize composite coverage.', pdfPath: reportPath, page: 26 },
+      { id: 'power-consumption', title: 'Power Consumption', description: 'Analyze power usage across single-antenna and phased-array configurations.', pdfPath: reportPath, page: 34 },
+    ],
+  },
+  {
+    id: 'experimental',
+    number: '4',
+    title: 'Experimental Results',
+    description: 'MATLAB-based experiments evaluate a single-antenna baseline, placement and optimization, phased-array behavior, software prototypes, hardware, and RSSI calibration.',
+    page: 19,
+    pdfPath: reportPath,
+    topics: ['Single Antenna Baseline Model', 'Node Placement', 'Nodes Optimization', 'Phased Antenna Array Model', 'Software Prototype', 'Hardware Prototype', 'RSSI Sensitivity Calibration'],
+    projectLink: 'results',
+  },
+  {
+    id: 'final-results',
+    number: '5',
+    title: 'Final Results',
+    description: 'The report consolidates the validated outcomes: power reduction, node density reduction, peak signal achieved, excellent coverage, and the power analysis.',
+    page: 34,
+    pdfPath: reportPath,
+    topics: ['Final results table', 'Number of elements', 'Power analysis'],
+    projectLink: 'results',
+  },
+  {
+    id: 'conclusion',
+    number: '6',
+    title: 'Conclusion and Future Work',
+    description: 'The conclusion summarizes the MATLAB optimization structure and identifies the future path toward a web application and broader implementation.',
+    page: 35,
+    pdfPath: reportPath,
+    topics: ['Conclusion', 'Future work'],
+    projectLink: 'journey',
+  },
+  {
+    id: 'references',
+    number: '7',
+    title: 'References',
+    description: 'The source material and research references used throughout the report.',
+    page: 36,
+    pdfPath: reportPath,
+    topics: ['Research sources', 'Technical references'],
+  },
 ]
 
 export const projectMetrics: ProjectMetric[] = [
