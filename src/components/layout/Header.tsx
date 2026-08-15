@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Radio, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
 const navLinks = [
   { label: 'Overview', href: '#overview' },
+  { label: 'Discover', href: '#discover-spark-squad' },
   { label: 'Journey', href: '#journey' },
   { label: 'Simulation', href: '#simulation' },
   { label: 'Real Project', href: '#real-project' },
@@ -38,9 +39,7 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between h-16">
           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-              <Radio size={18} className="text-cyan-400" />
-            </div>
+            <img src="/spark-squad-logo.png" alt="Spark Squad logo" className="w-8 h-8 object-contain" />
             <span className="font-bold text-white text-sm tracking-wide hidden sm:block">
               SIGNAL COVERAGE HUB
             </span>

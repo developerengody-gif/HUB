@@ -1,6 +1,8 @@
 import { Header } from './components/layout/Header'
 import { HeroSection } from './components/layout/HeroSection'
 import { Footer } from './components/layout/Footer'
+import { CinematicIntro } from './components/intro/CinematicIntro'
+import { DiscoverSparkSquadSection } from './components/discover/DiscoverSparkSquadSection'
 import { SimulatorSection } from './components/simulator/SimulatorSection'
 import { RealProjectSection } from './components/real-project/RealProjectSection'
 import { ComparisonSection } from './components/comparison/ComparisonSection'
@@ -16,9 +18,11 @@ import { ReportSection } from './components/report/ReportSection'
 export default function App() {
   return (
     <div className="min-h-screen bg-navy-950">
+      <CinematicIntro />
       <Header />
       <main>
         <HeroSection />
+        <DiscoverSparkSquadSection />
         <JourneySection />
         <ResearchBridgeSection />
         <SimulatorSection />

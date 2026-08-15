@@ -381,6 +381,3 @@ function PdfViewer({
     </section>
   )
 }
-
-
-export { ReportSection }

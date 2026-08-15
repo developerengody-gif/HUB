@@ -1,4 +1,4 @@
-import { Radio, ArrowRight, Cpu, Gamepad2, FileText } from 'lucide-react'
+import { ArrowRight, Cpu, Gamepad2, FileText } from 'lucide-react'
 
 export function HeroSection() {
   const scrollTo = (id: string) => {
@@ -12,16 +12,20 @@ export function HeroSection() {
 
       <div className="relative max-w-6xl mx-auto px-4 md:px-8 py-20">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-navy-800/50 border border-navy-600 mb-6">
+          <img src="/spark-squad-logo.png" alt="Spark Squad" className="w-5 h-5 object-contain" />
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
           <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
             Student Engineering Research Project
           </span>
         </div>
 
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight text-balance leading-tight">
-          Signal Coverage
-          <span className="block text-cyan-400">Hub</span>
-        </h1>
+        <div className="flex items-center gap-4 mb-2">
+          <img src="/spark-squad-logo.png" alt="Spark Squad logo" className="w-14 h-14 md:w-16 md:h-16 object-contain drop-shadow-[0_0_20px_rgba(34,211,238,0.3)]" />
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight text-balance leading-tight">
+            Signal Coverage
+            <span className="block text-cyan-400">Hub</span>
+          </h1>
+        </div>
 
         <p className="text-lg md:text-xl text-slate-400 mt-6 max-w-2xl leading-relaxed">
           A visual hub presenting research into indoor signal coverage using optimized node
