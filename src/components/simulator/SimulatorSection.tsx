@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Gamepad2, ExternalLink, Maximize, Minimize, RotateCw, Link2, Trash2, Loader as Loader2, TriangleAlert as AlertTriangle, Check, Gamepad, Wifi } from 'lucide-react'
+import { getSetting, saveSetting } from '../../lib/cloudData'
+import { useAuth } from '../../hooks/useAuth'
 
 const STORAGE_KEY = 'sch_simulator_url'
+const SETTING_KEY = 'simulator_url'
 const LOCAL_GAME_PATH = '/game/index.html'
 
 function isValidUrl(url: string): boolean {
@@ -24,27 +27,45 @@ export function SimulatorSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const { isAdmin } = useAuth()
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved && isValidUrl(saved)) {
-        setSimUrl(saved)
-      } else {
-        // Default to the locally-hosted game — no external dependency needed
+    void (async () => {
+      const cloudUrl = await getSetting<string>(SETTING_KEY)
+      if (cloudUrl && isValidUrl(cloudUrl)) {
+        setSimUrl(cloudUrl)
+        return
+      }
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY)
+        if (saved && isValidUrl(saved)) {
+          setSimUrl(saved)
+          if (isAdmin) await saveSetting(SETTING_KEY, saved)
+        } else {
+          setSimUrl(LOCAL_GAME_PATH)
+        }
+      } catch {
         setSimUrl(LOCAL_GAME_PATH)
       }
-    } catch {
-      setSimUrl(LOCAL_GAME_PATH)
-    }
-  }, [])
+    })()
+  }, [isAdmin])
+
+  const persistUrl = useCallback(
+    async (url: string | null) => {
+      if (url && url !== LOCAL_GAME_PATH) {
+        try { localStorage.setItem(STORAGE_KEY, url) } catch { /* ignore */ }
+        if (isAdmin) await saveSetting(SETTING_KEY, url)
+      } else {
+        try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
+        if (isAdmin) await saveSetting(SETTING_KEY, '')
+      }
+    },
+    [isAdmin],
+  )
 
   useEffect(() => {
-    // Only persist external URLs, not the local game path
-    if (simUrl && simUrl !== LOCAL_GAME_PATH) {
-      localStorage.setItem(STORAGE_KEY, simUrl)
-    }
-  }, [simUrl])
+    void persistUrl(simUrl)
+  }, [simUrl, persistUrl])
 
   useEffect(() => {
     const handler = () => setIsFullscreen(!!document.fullscreenElement)
@@ -104,11 +125,6 @@ export function SimulatorSection() {
       setInputUrl('')
       setInputError('')
       setShowUrlInput(false)
-      try {
-        localStorage.removeItem(STORAGE_KEY)
-      } catch {
-        // ignore
-      }
     }
   }, [])
 

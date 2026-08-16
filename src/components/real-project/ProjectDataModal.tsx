@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { FileImage, Plus, Save, Trash2, X } from 'lucide-react'
+import { FileImage, Plus, Save, Trash2, X, Loader as Loader2 } from 'lucide-react'
+import { uploadImage } from '../../lib/cloudData'
 
 export interface ProjectDataItem {
   id: string
@@ -44,18 +45,36 @@ const newItem = (): ProjectDataItem => ({
 
 export function ProjectDataModal({ items, onSave, onClose }: Props) {
   const [draft, setDraft] = useState<ProjectDataItem[]>(items)
+  const [uploadingId, setUploadingId] = useState<string | null>(null)
 
   const update = (id: string, changes: Partial<ProjectDataItem>) =>
     setDraft((current) =>
       current.map((item) => (item.id === id ? { ...item, ...changes } : item)),
     )
 
-  const readFile = (id: string, file?: File) => {
+  const readFile = async (id: string, file?: File) => {
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = () =>
-      update(id, { file: reader.result as string, fileName: file.name })
-    reader.readAsDataURL(file)
+    setUploadingId(id)
+    try {
+      if (file.type.startsWith('image/')) {
+        const url = await uploadImage(file, 'project')
+        if (url) {
+          update(id, { file: url, fileName: file.name })
+        } else {
+          const reader = new FileReader()
+          reader.onload = () =>
+            update(id, { file: reader.result as string, fileName: file.name })
+          reader.readAsDataURL(file)
+        }
+      } else {
+        const reader = new FileReader()
+        reader.onload = () =>
+          update(id, { file: reader.result as string, fileName: file.name })
+        reader.readAsDataURL(file)
+      }
+    } finally {
+      setUploadingId(null)
+    }
   }
 
   const submit = (event: React.FormEvent) => {
@@ -148,13 +167,13 @@ export function ProjectDataModal({ items, onSave, onClose }: Props) {
                   <div className="flex flex-wrap items-center gap-3 mt-3">
                     <label className="btn-secondary cursor-pointer">
                       <FileImage size={16} />{' '}
-                      {item.fileName ? 'Replace file' : 'Upload file'}
+                      {uploadingId === item.id ? <Loader2 size={14} className="animate-spin" /> : item.fileName ? 'Replace file' : 'Upload file'}
                       <input
                         type="file"
                         accept="image/*,.pdf"
                         className="hidden"
                         onChange={(event) =>
-                          readFile(item.id, event.target.files?.[0])
+                          void readFile(item.id, event.target.files?.[0])
                         }
                       />
                     </label>

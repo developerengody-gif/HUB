@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ChartBar as BarChart3, FileText, Pencil } from 'lucide-react'
 import { projectMetrics, projectParameters } from '../../data/projectData'
-import { usePersistentState } from '../../hooks/usePersistentState'
+import { useCloudSetting } from '../../hooks/useCloudSetting'
 import { ResultsModal, type EditableMetric } from './ResultsModal'
 
 const editableLabels = [
@@ -31,8 +31,8 @@ const initialMetrics: EditableMetric[] = editableLabels.map((label) => {
 })
 
 export function ResultsDashboardSection() {
-  const [metrics, setMetrics] = usePersistentState<EditableMetric[]>(
-    'sch_results_metrics',
+  const { value: metrics, setValue: setMetrics } = useCloudSetting<EditableMetric[]>(
+    'results_metrics',
     initialMetrics,
   )
   const [modalOpen, setModalOpen] = useState(false)

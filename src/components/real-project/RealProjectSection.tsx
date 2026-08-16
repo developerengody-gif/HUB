@@ -14,7 +14,7 @@ import {
   FileText,
   Plus,
 } from 'lucide-react'
-import { usePersistentState } from '../../hooks/usePersistentState'
+import { useCloudSetting } from '../../hooks/useCloudSetting'
 import {
   ProjectDataModal,
   type ProjectDataItem,
@@ -73,8 +73,8 @@ const initialProjectData: ProjectDataItem[] = [
 ]
 
 export function RealProjectSection() {
-  const [projectData, setProjectData] = usePersistentState<ProjectDataItem[]>(
-    'sch_project_data',
+  const { value: projectData, setValue: setProjectData } = useCloudSetting<ProjectDataItem[]>(
+    'project_data',
     initialProjectData,
   )
   const [modalOpen, setModalOpen] = useState(false)
@@ -123,7 +123,7 @@ export function RealProjectSection() {
                 <h3 className="font-semibold text-white mt-2">
                   {item.label || 'Untitled project asset'}
                 </h3>
-                {item.file?.startsWith('data:image/') && (
+                {item.file && (
                   <img
                     src={item.file}
                     alt={item.label}
