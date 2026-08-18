@@ -7,7 +7,7 @@ const navLinks = [
   { label: 'Overview', href: '#overview' },
   { label: 'Discover', href: '#discover-spark-squad' },
   { label: 'Journey', href: '#journey' },
-  { label: 'Simulation', href: '#simulation' },
+  { label: 'Simulation', href: '#real-project' },
   { label: 'Real Project', href: '#real-project' },
   { label: 'Results', href: '#results' },
   { label: 'Academy', href: '#academy' },

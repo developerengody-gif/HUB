@@ -3,7 +3,6 @@ import { HeroSection } from './components/layout/HeroSection'
 import { Footer } from './components/layout/Footer'
 import { CinematicIntro } from './components/intro/CinematicIntro'
 import { DiscoverSparkSquadSection } from './components/discover/DiscoverSparkSquadSection'
-import { SimulatorSection } from './components/simulator/SimulatorSection'
 import { RealProjectSection } from './components/real-project/RealProjectSection'
 import { ComparisonSection } from './components/comparison/ComparisonSection'
 import { TeamSection } from './components/team/TeamSection'
@@ -25,7 +24,6 @@ export default function App() {
         <DiscoverSparkSquadSection />
         <JourneySection />
         <ResearchBridgeSection />
-        <SimulatorSection />
         <RealProjectSection />
         <BeforeAfterSection />
         <ResultsDashboardSection />
